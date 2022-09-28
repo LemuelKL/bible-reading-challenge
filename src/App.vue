@@ -1,91 +1,104 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/HelloWorld.vue";
+<script lang="ts" setup>
+import { RouterView } from "vue-router";
+import { ref } from "vue";
+import { supabase } from "./supabase";
+import { useUserStore } from "./stores/user";
+import SBAuthVue from "./components/SBAuth.vue";
+
+const menuList = [
+  {
+    icon: "today",
+    label: "Today",
+    path: "/today",
+    separator: true,
+  },
+  {
+    icon: "leaderboard",
+    label: "Leaderboard",
+    path: "/leaderboard",
+    separator: false,
+  },
+  {
+    icon: "view_list",
+    label: "My Progress",
+    path: "/my-progress",
+    separator: true,
+  },
+  {
+    icon: "settings",
+    label: "Settings",
+    path: "/settings",
+    separator: false,
+  },
+  {
+    icon: "help",
+    iconColor: "primary",
+    label: "Help",
+    path: "/help",
+    separator: false,
+  },
+];
+
+const drawer = ref(false);
+
+const user = useUserStore();
+user.sbUser = supabase.auth.user();
+supabase.auth.onAuthStateChange((_event: any, session) => {
+  user.sbUser = session?.user;
+});
 </script>
 
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
+  <main>
+    <div class="q-pa-none" v-if="user.sbUser">
+      <q-layout
+        view="hHh Lpr lff"
+        container
+        style="height: 100vh"
+        class="shadow-2"
+      >
+        <q-header elevated class="bg-black">
+          <q-toolbar>
+            <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
+            <q-toolbar-title>Home</q-toolbar-title>
+          </q-toolbar>
+        </q-header>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+        <q-drawer
+          v-model="drawer"
+          show-if-above
+          :width="200"
+          :breakpoint="500"
+          bordered
+          class="bg-grey-3"
+        >
+          <q-scroll-area class="fit">
+            <q-list>
+              <template v-for="(menuItem, index) in menuList" :key="index">
+                <q-item
+                  clickable
+                  @click="$router.push(menuItem.path)"
+                  :active="menuItem.label === 'Outbox'"
+                  v-ripple
+                >
+                  <q-item-section avatar>
+                    <q-icon :name="menuItem.icon" />
+                  </q-item-section>
+                  <q-item-section>
+                    {{ menuItem.label }}
+                  </q-item-section>
+                </q-item>
+                <q-separator :key="'sep' + index" v-if="menuItem.separator" />
+              </template>
+            </q-list>
+          </q-scroll-area>
+        </q-drawer>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+        <q-page-container>
+          <q-page padding> <RouterView></RouterView> </q-page>
+        </q-page-container>
+      </q-layout>
     </div>
-  </header>
-
-  <RouterView />
+    <div v-else><SBAuthVue /></div>
+  </main>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
