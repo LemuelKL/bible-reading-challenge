@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import bibleinfo from "./../stores/bibleinfo.json";
-const verses = ref([]);
+
+interface Verse {
+  engs: string;
+  chap: number;
+  sec: number;
+  bible_text: string;
+}
+const verses = ref<Verse[]>([]);
 
 const books = [
   "創",
