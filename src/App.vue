@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { supabase } from "./supabase";
 import { useUserStore } from "./stores/user";
 import SBAuthVue from "./components/SBAuth.vue";
+import type { AuthChangeEvent, Session } from "@supabase/gotrue-js";
 
 const menuList = [
   {
@@ -43,9 +44,11 @@ const drawer = ref(false);
 
 const user = useUserStore();
 user.sbUser = supabase.auth.user();
-supabase.auth.onAuthStateChange((_event: any, session) => {
-  user.sbUser = session?.user;
-});
+supabase.auth.onAuthStateChange(
+  (event: AuthChangeEvent, session: Session | null) => {
+    user.sbUser = session?.user;
+  }
+);
 </script>
 
 <template>

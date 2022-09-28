@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { supabase } from "./../supabase";
+import { supabase } from "../supabase";
 import { useUserStore } from "@/stores/user";
 const user = useUserStore();
 </script>
