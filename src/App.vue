@@ -51,6 +51,7 @@ supabase.auth.onAuthStateChange(
       supabase
         .from("profiles")
         .select("id, first_name, last_name")
+        .eq("id", user.sbUser?.id)
         .then(
           (res) => {
             if (res.error) {

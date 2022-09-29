@@ -165,27 +165,26 @@ export const useBibleStore = defineStore("bible", () => {
       });
   }
 
-  function toggleRead() {
-    if (read.value) {
-      supabase
-        .from("readings_done")
-        .delete()
-        .match(matchReadRecord())
-        .then(({ data, error }) => {
-          if (data) {
-            read.value = false;
-          }
-        });
-    } else {
-      supabase
-        .from("readings_done")
-        .insert(matchReadRecord())
-        .then(({ data, error }) => {
-          if (data) {
-            read.value = true;
-          }
-        });
-    }
+  function markRead() {
+    supabase
+      .from("readings_done")
+      .insert(matchReadRecord())
+      .then(({ data, error }) => {
+        if (data) {
+          read.value = true;
+        }
+      });
+  }
+  function markUnread() {
+    supabase
+      .from("readings_done")
+      .delete()
+      .match(matchReadRecord())
+      .then(({ data, error }) => {
+        if (data) {
+          read.value = false;
+        }
+      });
   }
 
   const verses = ref<string[]>([]);
@@ -195,7 +194,8 @@ export const useBibleStore = defineStore("bible", () => {
 
   return {
     read,
-    toggleRead,
+    markRead,
+    markUnread,
     books,
     book,
     chapter,

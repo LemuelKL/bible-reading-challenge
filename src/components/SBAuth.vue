@@ -19,28 +19,28 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <form class="row flex-center flex" @submit.prevent="handleLogin">
-    <div class="col-6 form-widget">
-      <div class="text-h2">Login or Sign-up</div>
-      <p class="description">
-        Authenticate via magic link with your email below
-      </p>
-      <div>
-        <input
-          class="inputField"
-          type="email"
-          placeholder="Your email"
-          v-model="email"
+  <div style="height: 100vh" class="row justify-center items-center">
+    <q-card>
+      <q-card-section>
+        <div class="text-h5">Welcome</div>
+      </q-card-section>
+      <q-card-section>
+        <q-input standout v-model="email" type="email" prefix="Email:">
+          <template v-slot:prepend>
+            <q-icon name="mail" />
+          </template>
+        </q-input>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn
+          flat
+          label="Login"
+          color="primary"
+          :loading="loading"
+          @click="handleLogin"
+          :disable="!email"
         />
-      </div>
-      <div>
-        <input
-          type="submit"
-          class="button block"
-          :value="loading ? 'Loading' : 'Send magic link'"
-          :disabled="loading"
-        />
-      </div>
-    </div>
-  </form>
+      </q-card-actions>
+    </q-card>
+  </div>
 </template>

@@ -7,6 +7,21 @@ const bible = useBibleStore();
 const { read, book, books, chapter, verses } = storeToRefs(bible);
 
 const $q = useQuasar();
+
+function handleToggleRead() {
+  if (!read.value) {
+    bible.markRead();
+  } else {
+    $q.dialog({
+      title: "Mark as unread",
+      message: "Are you sure you want to mark this chapter as unread?",
+      cancel: true,
+      persistent: true,
+    }).onOk(() => {
+      bible.markUnread();
+    });
+  }
+}
 </script>
 
 <template>
@@ -45,7 +60,7 @@ const $q = useQuasar();
       :color="read ? 'green' : 'red'"
       size="md"
       class="col-1"
-      @click="bible.toggleRead"
+      @click="handleToggleRead"
     >
       <q-icon name="beenhere" />
     </q-btn>
