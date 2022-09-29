@@ -191,6 +191,8 @@ export const useBibleStore = defineStore("bible", () => {
   const verses = ref<string[]>([]);
   const read = ref(false);
 
+  fetchVerses();
+
   return {
     read,
     toggleRead,

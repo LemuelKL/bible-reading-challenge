@@ -7,7 +7,12 @@ const email = ref("");
 
 const handleLogin = async () => {
   loading.value = true;
-  const { error } = await supabase.auth.signIn({ email: email.value });
+  const { error } = await supabase.auth.signIn(
+    { email: email.value },
+    {
+      redirectTo: window.location.origin,
+    }
+  );
   if (error) alert(error.message);
   loading.value = false;
 };
@@ -16,8 +21,10 @@ const handleLogin = async () => {
 <template>
   <form class="row flex-center flex" @submit.prevent="handleLogin">
     <div class="col-6 form-widget">
-      <h1 class="header">Login or Sign-up</h1>
-      <p class="description">Sign in via magic link with your email below</p>
+      <div class="text-h2">Login or Sign-up</div>
+      <p class="description">
+        Authenticate via magic link with your email below
+      </p>
       <div>
         <input
           class="inputField"
