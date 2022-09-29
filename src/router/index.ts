@@ -1,6 +1,7 @@
-import MyProgessVue from "@/views/MyProgess.vue";
+import MyProgess from "@/views/MyProgess.vue";
+import TodayView from "@/views/TodayView.vue";
+import SettingsView from "@/views/SettingsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import TodayView from "../views/TodayView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,7 +15,12 @@ const router = createRouter({
     {
       path: "/my-progress",
       name: "my-progress",
-      component: MyProgessVue,
+      component: MyProgess,
+    },
+    {
+      path: "/settings",
+      name: "settings",
+      component: SettingsView,
     },
   ],
 });

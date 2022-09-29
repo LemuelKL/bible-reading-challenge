@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { supabase } from "@/supabase";
 import { ref, computed, watch } from "vue";
+import { useQuasar } from "quasar";
 import bibleinfo from "./../stores/bibleinfo.json";
+
+const $q = useQuasar();
 
 interface Verse {
   engs: string;
@@ -93,47 +97,120 @@ watch(chapters, (newChapters) => {
   }
 });
 
-const loading = ref(false);
+const passage_id = computed(() => {
+  const bookIndex = books.indexOf(book.value);
+  return bookIndex + "-" + chapter.value;
+});
+
+watch(passage_id, (newPassageId) => {
+  fetchVerse();
+  fetchReadStatus();
+});
+
 const fetchVerse = async () => {
-  loading.value = true;
   const response = await fetch(
     `https://bible.fhl.net/json/qb.php?chap=${chapter.value}&gb=0&chineses=${book.value}`
   );
   const data = await response.json();
   verses.value = data.record;
-  loading.value = false;
 };
+
+const getReadRecordIdentifier = () => {
+  return {
+    reader: supabase.auth.user()?.id,
+    book_id: books.indexOf(book.value),
+    chapter: chapter.value,
+  };
+};
+
+const loadingReadStatus = ref(false);
+const read = ref(false);
+const fetchReadStatus = async () => {
+  loadingReadStatus.value = true;
+  const { data, error } = await supabase
+    .from("readings_done")
+    .select("*")
+    .match(getReadRecordIdentifier());
+  loadingReadStatus.value = false;
+  if (data) {
+    read.value = data.length > 0;
+  }
+};
+
+const toggleRead = async () => {
+  if (read.value) {
+    $q.dialog({
+      title: "Confirm",
+      message: "Would you like to mark this chapter as unread?",
+      cancel: true,
+      persistent: true,
+    })
+      .onOk(async () => {
+        const { data, error } = await supabase
+          .from("readings_done")
+          .delete()
+          .match(getReadRecordIdentifier());
+        fetchReadStatus();
+      })
+      .onCancel(() => {});
+  } else {
+    const { data, error } = await supabase
+      .from("readings_done")
+      .insert([getReadRecordIdentifier()]);
+    fetchReadStatus();
+  }
+};
+
+fetchVerse();
+fetchReadStatus();
 </script>
 
 <template>
-  <main>
-    <div class="row q-gutter-md">
-      <q-select
-        class="col"
-        dense
-        options-dense
-        v-model="book"
-        :options="books"
-        label="Books"
-      />
-      <q-select
-        class="col"
-        dense
-        options-dense
-        v-model="chapter"
-        :options="chapters"
-        label="Chapters"
-      />
-      <q-btn size="md" class="col-1" @click="fetchVerse" :loading="loading">
-        <q-icon name="search" />
-        <template v-slot:loading> <q-spinner-facebook /> </template>
-      </q-btn>
-    </div>
+  <div class="row q-gutter-md">
+    <q-select
+      class="col"
+      dense
+      options-dense
+      v-model="book"
+      :options="books"
+      label="Books"
+    />
+    <q-select
+      class="col"
+      dense
+      options-dense
+      v-model="chapter"
+      :options="chapters"
+      label="Chapters"
+    />
+    <q-btn
+      outline
+      :color="read ? 'green' : 'red'"
+      size="md"
+      class="col-1"
+      @click="toggleRead"
+      :disable="loadingReadStatus"
+    >
+      <q-icon name="beenhere" />
+    </q-btn>
+  </div>
 
-    <div v-for="verse in verses" :key="verse.engs + verse.chap + verse.sec">
-      {{ verse.bible_text }}
-    </div>
-  </main>
+  <table class="q-ma-sm">
+    <tr v-for="verse in verses" :key="verse.sec">
+      <td>{{ verse.sec }}</td>
+      <td>{{ verse.bible_text }}</td>
+    </tr>
+  </table>
 </template>
+
+<style scoped>
+table td,
+table td * {
+  vertical-align: top;
+}
+td {
+  padding: 4px;
+}
+</style>
 
 <!-- // unv -->

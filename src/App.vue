@@ -33,7 +33,6 @@ const menuList = [
   },
   {
     icon: "help",
-    iconColor: "primary",
     label: "Help",
     path: "/help",
     separator: false,
@@ -47,6 +46,24 @@ user.sbUser = supabase.auth.user();
 supabase.auth.onAuthStateChange(
   (event: AuthChangeEvent, session: Session | null) => {
     user.sbUser = session?.user;
+
+    if (event === "SIGNED_IN") {
+      supabase
+        .from("profiles")
+        .select("id, first_name, last_name")
+        .then(
+          (res) => {
+            if (res.error) {
+              console.log(res.error);
+            } else {
+              user.sbProfile = res.data[0];
+            }
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+    }
   }
 );
 </script>
@@ -63,7 +80,7 @@ supabase.auth.onAuthStateChange(
         <q-header elevated class="bg-black">
           <q-toolbar>
             <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
-            <q-toolbar-title>Home</q-toolbar-title>
+            <q-toolbar-title>Bible Reading Challenge</q-toolbar-title>
           </q-toolbar>
         </q-header>
 
@@ -85,7 +102,10 @@ supabase.auth.onAuthStateChange(
                   v-ripple
                 >
                   <q-item-section avatar>
-                    <q-icon :name="menuItem.icon" />
+                    <q-icon
+                      :name="menuItem.icon"
+                      :color="menuItem.path === $route.path ? 'primary' : ''"
+                    />
                   </q-item-section>
                   <q-item-section>
                     {{ menuItem.label }}

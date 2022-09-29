@@ -1,6 +1,6 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { Quasar } from "quasar";
+import { Quasar, Dialog } from "quasar";
 
 // Import icon libraries
 import "@quasar/extras/material-icons/material-icons.css";
@@ -14,7 +14,7 @@ import router from "./router";
 const app = createApp(App);
 
 app.use(Quasar, {
-  plugins: {},
+  plugins: { Dialog },
 });
 app.use(createPinia());
 app.use(router);
