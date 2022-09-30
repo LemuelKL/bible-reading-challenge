@@ -159,6 +159,7 @@ export const useBibleStore = defineStore('bible', () => {
             .select('*')
             .match(matchReadRecord())
             .then(({ data, error }) => {
+                if (error) return;
                 if (data) {
                     read.value = data.length > 0;
                 }
@@ -168,9 +169,10 @@ export const useBibleStore = defineStore('bible', () => {
     function markRead() {
         supabase
             .from('readings_done')
-            .insert(matchReadRecord())
+            .upsert(matchReadRecord())
             .then(({ data, error }) => {
-                if (data) {
+                if (error) return;
+                if (data.length > 0) {
                     read.value = true;
                 }
             });
@@ -181,7 +183,8 @@ export const useBibleStore = defineStore('bible', () => {
             .delete()
             .match(matchReadRecord())
             .then(({ data, error }) => {
-                if (data) {
+                if (error) return;
+                if (data.length > 0) {
                     read.value = false;
                 }
             });

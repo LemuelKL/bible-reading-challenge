@@ -1,4 +1,5 @@
-import MyProgess from '@/views/MyProgess.vue';
+import MyProgessView from '@/views/MyProgessView.vue';
+import LeaderboardView from '@/views/LeaderboardView.vue';
 import TodayView from '@/views/TodayView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -13,9 +14,14 @@ const router = createRouter({
             component: TodayView
         },
         {
+            path: '/leaderboard',
+            name: 'leaderboard',
+            component: LeaderboardView
+        },
+        {
             path: '/my-progress',
             name: 'my-progress',
-            component: MyProgess
+            component: MyProgessView
         },
         {
             path: '/settings',
