@@ -8,9 +8,9 @@ import type { AuthChangeEvent, Session } from "@supabase/gotrue-js";
 
 const menuList = [
   {
-    icon: "home",
-    label: "Home",
-    path: "/home",
+    icon: "today",
+    label: "Today",
+    path: "/today",
     separator: true,
   },
   {
@@ -26,9 +26,9 @@ const menuList = [
     separator: true,
   },
   {
-    icon: "person",
-    label: "Profile",
-    path: "/profile",
+    icon: "settings",
+    label: "Settings",
+    path: "/settings",
     separator: false,
   },
   {
@@ -72,9 +72,7 @@ supabase.auth.onAuthStateChange(
 <template>
   <main>
     <div class="q-pa-none" v-if="user.sbUser">
-      <div v-if="user.sbProfile?.role">NO ROLE! SIGN UP!</div>
       <q-layout
-        v-else
         view="hHh Lpr lff"
         container
         style="height: 100vh"
@@ -83,7 +81,7 @@ supabase.auth.onAuthStateChange(
         <q-header elevated class="bg-black">
           <q-toolbar>
             <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
-            <q-toolbar-title>Team 7</q-toolbar-title>
+            <q-toolbar-title>Bible Reading Challenge</q-toolbar-title>
           </q-toolbar>
         </q-header>
 
