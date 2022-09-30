@@ -1,9 +1,9 @@
 <script setup lang="ts">
 const props = defineProps<{
-  verse: string;
+    verse: string;
 }>();
 </script>
 
 <template>
-  {{ verse }}
+    {{ verse }}
 </template>

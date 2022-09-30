@@ -1,46 +1,56 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { supabase } from "../supabase";
+import { useQuasar } from 'quasar';
+import { ref } from 'vue';
+import { supabase } from '../supabase';
 
 const loading = ref(false);
-const email = ref("");
+const email = ref('');
+
+const $q = useQuasar();
 
 const handleLogin = async () => {
-  loading.value = true;
-  const { error } = await supabase.auth.signIn(
-    { email: email.value },
-    {
-      redirectTo: window.location.origin,
+    loading.value = true;
+    const { error } = await supabase.auth.signIn(
+        { email: email.value },
+        {
+            redirectTo: window.location.origin
+        }
+    );
+    if (error) alert(error.message);
+    else {
+        $q.notify({
+            message: 'Check your email for the login link!',
+            color: 'positive',
+            position: 'top'
+        });
     }
-  );
-  if (error) alert(error.message);
-  loading.value = false;
+    loading.value = false;
 };
 </script>
 
 <template>
-  <div style="height: 100vh" class="row justify-center items-center">
-    <q-card>
-      <q-card-section>
-        <div class="text-h5">Welcome</div>
-      </q-card-section>
-      <q-card-section>
-        <q-input standout v-model="email" type="email" prefix="Email:">
-          <template v-slot:prepend>
-            <q-icon name="mail" />
-          </template>
-        </q-input>
-      </q-card-section>
-      <q-card-actions align="right">
-        <q-btn
-          flat
-          label="Login"
-          color="primary"
-          :loading="loading"
-          @click="handleLogin"
-          :disable="!email"
-        />
-      </q-card-actions>
-    </q-card>
-  </div>
+    <div style="height: 100vh" class="row justify-center items-center">
+        <q-card>
+            <q-card-section>
+                <div class="text-h5">Welcome</div>
+            </q-card-section>
+            <q-card-section>
+                <q-input standout v-model="email" type="email" prefix="Email:">
+                    <template v-slot:prepend>
+                        <q-icon name="mail" />
+                    </template>
+                </q-input>
+            </q-card-section>
+            <q-card-actions align="right">
+                <q-btn
+                    flat
+                    label="Login"
+                    color="primary"
+                    :loading="loading"
+                    @click="handleLogin"
+                    :disable="!email"
+                />
+            </q-card-actions>
+        </q-card>
+    </div>
 </template>
