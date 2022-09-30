@@ -7,6 +7,7 @@ export const useUserStore = defineStore("user", () => {
     id: string;
     first_name: string;
     last_name: string;
+    role: number;
   }>(null);
 
   return { sbUser, sbProfile };

@@ -1,16 +1,16 @@
 import MyProgess from "@/views/MyProgess.vue";
-import TodayView from "@/views/TodayView.vue";
-import SettingsView from "@/views/SettingsView.vue";
+import HomeView from "@/views/HomeView.vue";
+import ProfileView from "@/views/ProfileView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/today",
+      path: "/home",
       alias: "/",
       name: "home",
-      component: TodayView,
+      component: HomeView,
     },
     {
       path: "/my-progress",
@@ -18,9 +18,9 @@ const router = createRouter({
       component: MyProgess,
     },
     {
-      path: "/settings",
-      name: "settings",
-      component: SettingsView,
+      path: "/profile",
+      name: "profile",
+      component: ProfileView,
     },
   ],
 });
