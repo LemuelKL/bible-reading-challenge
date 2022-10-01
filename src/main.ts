@@ -14,10 +14,10 @@ import router from './router';
 const app = createApp(App);
 
 app.use(Quasar, {
-    plugins: { Dialog, Notify },
-    config: {
-        notify: {}
-    }
+  plugins: { Dialog, Notify },
+  config: {
+    notify: {}
+  }
 });
 app.use(createPinia());
 app.use(router);

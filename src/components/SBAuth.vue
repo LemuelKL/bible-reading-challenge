@@ -1,56 +1,46 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { ref } from 'vue';
 import { supabase } from '../supabase';
-
-const loading = ref(false);
-const email = ref('');
 
 const $q = useQuasar();
 
-const handleLogin = async () => {
-    loading.value = true;
-    const { error } = await supabase.auth.signIn(
-        { email: email.value },
-        {
-            redirectTo: window.location.origin
-        }
-    );
-    if (error) alert(error.message);
-    else {
-        $q.notify({
-            message: 'Check your email for the login link!',
-            color: 'positive',
-            position: 'top'
-        });
+async function signInWithGoogle() {
+  const { error } = await supabase.auth.signIn(
+    { provider: 'google' },
+    {
+      redirectTo: window.location.origin
     }
-    loading.value = false;
-};
+  );
+  if (error) $q.notify({ type: 'negative', message: error.message });
+}
 </script>
 
 <template>
-    <div style="height: 100vh" class="row justify-center items-center">
-        <q-card>
-            <q-card-section>
-                <div class="text-h5">Welcome</div>
-            </q-card-section>
-            <q-card-section>
-                <q-input standout v-model="email" type="email" prefix="Email:">
-                    <template v-slot:prepend>
-                        <q-icon name="mail" />
-                    </template>
-                </q-input>
-            </q-card-section>
-            <q-card-actions align="right">
-                <q-btn
-                    flat
-                    label="Login"
-                    color="primary"
-                    :loading="loading"
-                    @click="handleLogin"
-                    :disable="!email"
-                />
-            </q-card-actions>
-        </q-card>
-    </div>
+  <div style="height: 100vh" class="row justify-center items-center">
+    <q-card flat bordered class="bg-grey-1">
+      <q-card-section class="welcome">
+        <div class="text-h4">Bible Reading Challenge</div>
+        <div class="text-subtitle2 text-grey-6" style="max-width: 250px">
+          May God give you the grace to pray and the desire to read the Holy
+          Bible.
+        </div>
+      </q-card-section>
+      <q-separator></q-separator>
+      <q-card-actions align="evenly">
+        <q-btn
+          @click="signInWithGoogle"
+          no-caps
+          outline
+          align="around"
+          label="Continue with Google"
+          icon="img:assets/g.png" />
+      </q-card-actions>
+    </q-card>
+  </div>
 </template>
+
+<style>
+.welcome {
+  font-family: 'Times New Roman', Times, serif;
+}
+</style>
