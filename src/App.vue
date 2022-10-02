@@ -8,9 +8,9 @@ import type { AuthChangeEvent, Session } from '@supabase/gotrue-js';
 
 const menuList = [
   {
-    icon: 'today',
-    label: 'Today',
-    path: '/today',
+    icon: 'play_lesson',
+    label: 'Reading',
+    path: '/reading',
     separator: true
   },
   {

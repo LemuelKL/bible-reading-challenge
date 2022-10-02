@@ -1,4 +1,4 @@
-import TodayView from '@/views/TodayView.vue';
+import ReadingView from '@/views/ReadingView.vue';
 import LeaderboardView from '@/views/LeaderboardView.vue';
 import MyProgessView from '@/views/MyProgessView.vue';
 import SettingsView from '@/views/SettingsView.vue';
@@ -9,10 +9,9 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/today',
-      alias: '/',
-      name: 'home',
-      component: TodayView
+      path: '/reading/:bookNo?/:chapterNo?',
+      name: 'reading',
+      component: ReadingView
     },
     {
       path: '/leaderboard',

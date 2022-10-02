@@ -13,7 +13,6 @@ interface BookReadingRecord extends Book {
 }
 
 const bookReadingRecords = ref<BookReadingRecord[]>([]);
-
 let bookNo = 1;
 for (const book of books.value) {
   for (let chapter = 1; chapter <= book.chapters; chapter++) {
@@ -58,8 +57,20 @@ supabase
           <template
             v-for="(read, index) of bookRecord.chaptersRead"
             :key="index">
-            <div v-if="read" class="progress-block bg-green"></div>
-            <div v-else class="progress-block bg-grey-4"></div>
+            <div
+              :class="read ? 'bg-green' : 'bg-grey-4'"
+              class="progress-block"
+              @click="
+                $router.push({
+                  name: 'reading',
+                  params: {
+                    bookNo: bookRecord.bookNo,
+                    chapterNo: index + 1
+                  }
+                })
+              ">
+              <q-tooltip>{{ index + 1 }}</q-tooltip>
+            </div>
           </template>
         </td>
       </tr>
@@ -69,8 +80,12 @@ supabase
 
 <style scoped>
 .progress-block {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   margin: 2px;
+}
+.progress-block:hover {
+  cursor: pointer;
+  outline: auto 1px;
 }
 </style>

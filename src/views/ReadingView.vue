@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
+import { useRoute } from 'vue-router';
 
 import { useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
@@ -21,6 +22,16 @@ function handleToggleRead() {
       bible.markUnread();
     });
   }
+}
+
+const route = useRoute();
+if (route.params.bookNo) {
+  const bn = parseInt(route.params.bookNo as string);
+  bible.goToBook(bn);
+}
+if (route.params.chapterNo) {
+  const cn = parseInt(route.params.chapterNo as string);
+  bible.goToChapter(cn);
 }
 </script>
 

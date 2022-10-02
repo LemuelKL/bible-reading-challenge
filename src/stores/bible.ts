@@ -120,8 +120,9 @@ export const useBibleStore = defineStore('bible', () => {
     }
     fetchVerses();
   }
-  function goToBook(book: Book) {
-    bookIdx.value = books.value.indexOf(book);
+  function goToBook(book: Book | number) {
+    bookIdx.value =
+      typeof book === 'number' ? book - 1 : books.value.indexOf(book);
     chapter.value = 1;
     fetchVerses();
   }
