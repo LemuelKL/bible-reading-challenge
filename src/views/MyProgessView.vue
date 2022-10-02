@@ -58,8 +58,8 @@ supabase
           <template
             v-for="(read, index) of bookRecord.chaptersRead"
             :key="index">
-            <div v-if="read" class="block bg-green"></div>
-            <div v-else class="block bg-grey-4"></div>
+            <div v-if="read" class="progress-block bg-green"></div>
+            <div v-else class="progress-block bg-grey-4"></div>
           </template>
         </td>
       </tr>
@@ -67,8 +67,8 @@ supabase
   </table>
 </template>
 
-<style>
-.block {
+<style scoped>
+.progress-block {
   width: 10px;
   height: 10px;
   margin: 2px;
