@@ -12,11 +12,12 @@ const updateProfile = async () => {
   updatingProfile.value = true;
   const { data, error } = await supabase
     .from('profiles')
-    .update({
-      first_name: sbProfile.value?.first_name,
-      last_name: sbProfile.value?.last_name
+    .upsert({
+      id: supabase.auth.user()?.id,
+      first_name: firstName.value,
+      last_name: lastName.value
     })
-    .match({ id: sbProfile.value?.id });
+    .match({ id: supabase.auth.user()?.id });
   if (error) {
     // console.log("hi");
   } else if (data) {
@@ -24,6 +25,14 @@ const updateProfile = async () => {
   }
   updatingProfile.value = false;
 };
+
+const firstName = ref(sbProfile.value?.first_name);
+const lastName = ref(sbProfile.value?.last_name);
+
+user.$subscribe(() => {
+  firstName.value = sbProfile.value?.first_name;
+  lastName.value = sbProfile.value?.last_name;
+});
 </script>
 
 <template>
@@ -34,18 +43,18 @@ const updateProfile = async () => {
       <q-btn outline @click="supabase.auth.signOut()">Logout</q-btn>
     </q-card-section>
     <q-separator />
-    <q-card-section class="q-gutter-xs" v-if="sbProfile">
+    <q-card-section class="q-gutter-xs">
       <q-input standout :model-value="user.sbUser?.email" dense readonly />
 
       <q-input
         outlined
         dense
-        v-model="sbProfile.first_name"
+        v-model="firstName"
         placeholder="First name"></q-input>
       <q-input
         outlined
         dense
-        v-model="sbProfile.last_name"
+        v-model="lastName"
         placeholder="Last name"></q-input>
     </q-card-section>
     <q-card-actions align="right">
@@ -54,7 +63,7 @@ const updateProfile = async () => {
         color="primary"
         @click="updateProfile"
         :disable="updatingProfile">
-        Upadte Profile
+        {{ sbProfile ? 'Update' : 'Create' }}
       </q-btn>
     </q-card-actions>
   </q-card>
