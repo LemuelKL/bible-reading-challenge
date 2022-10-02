@@ -27,13 +27,13 @@ const updateProfile = async () => {
 </script>
 
 <template>
-  <q-card>
+  <q-card flat bordered>
     <q-card-section class="row justify-between">
       <div class="text-h5">My Profile</div>
       <q-space></q-space>
       <q-btn outline @click="supabase.auth.signOut()">Logout</q-btn>
     </q-card-section>
-    <q-separator inset />
+    <q-separator />
     <q-card-section class="q-gutter-xs" v-if="sbProfile">
       <q-input standout :model-value="user.sbUser?.email" dense readonly />
 

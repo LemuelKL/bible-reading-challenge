@@ -4,9 +4,9 @@ const date = ref('2021/01/01');
 </script>
 
 <template>
-  <q-card>
+  <q-card flat bordered>
     <q-card-section class="text-h5">Challenge Settings</q-card-section>
-    <q-separator></q-separator>
+    <q-separator />
     <q-card-section>
       <div class="row q-gutter-sm">
         <q-input

@@ -27,16 +27,21 @@ function handleToggleRead() {
 <template>
   <div class="row q-gutter-md">
     <q-select
-      class="col"
+      style="width: 190px"
+      outlined
       dense
       options-dense
       v-on:update:model-value="bible.goToBook"
       :model-value="bible.book"
       :options="books"
-      option-label="name"
-      label="Books" />
+      option-label="name">
+      <template v-slot:prepend>
+        <q-icon name="book" color="accent" />
+      </template>
+    </q-select>
     <q-select
-      class="col"
+      style="width: 100px"
+      outlined
       dense
       options-dense
       v-on:update:model-value="bible.goToChapter"
@@ -45,8 +50,12 @@ function handleToggleRead() {
         Array(book.chapters)
           .fill(0)
           .map((_, idx) => 1 + idx)
-      "
-      label="Chapters" />
+      ">
+      <template v-slot:prepend>
+        <q-icon name="summarize" :color="read ? 'teal' : ''" />
+      </template>
+    </q-select>
+    <q-space></q-space>
     <q-btn outline @click="bible.goPrevChapter">
       <q-icon name="arrow_back"></q-icon>
     </q-btn>
