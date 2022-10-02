@@ -22,7 +22,7 @@ interface APIResponse {
   version: string;
 }
 
-interface Book {
+export interface Book {
   name: string;
   abbrv: string;
   chapters: number;
