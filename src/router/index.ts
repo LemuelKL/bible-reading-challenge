@@ -1,7 +1,8 @@
-import MyProgessView from '@/views/MyProgessView.vue';
-import LeaderboardView from '@/views/LeaderboardView.vue';
 import TodayView from '@/views/TodayView.vue';
+import LeaderboardView from '@/views/LeaderboardView.vue';
+import MyProgessView from '@/views/MyProgessView.vue';
 import SettingsView from '@/views/SettingsView.vue';
+import HelpViewVue from '@/views/HelpView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView
+    },
+    {
+      path: '/help',
+      name: 'help',
+      component: HelpViewVue
     }
   ]
 });
