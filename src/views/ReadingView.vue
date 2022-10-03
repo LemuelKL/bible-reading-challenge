@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { useRoute } from 'vue-router';
-
-import { useBibleStore } from '@/stores/bible';
+import { watch } from 'vue';
+import { type BookName, useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
+import router from '@/router';
 const bible = useBibleStore();
-const { read, book, books, chapter, verses } = storeToRefs(bible);
+const { read, book, bookInfos, chapter, chapterCount, verses } =
+  storeToRefs(bible);
 
 const $q = useQuasar();
 
@@ -25,14 +27,45 @@ function handleToggleRead() {
 }
 
 const route = useRoute();
-if (route.params.bookNo) {
-  const bn = parseInt(route.params.bookNo as string);
-  bible.goToBook(bn);
+if (route.params.book) {
+  const bookName = route.params.book;
+  if (
+    bookInfos.value
+      .map((info) => info.name as string)
+      .includes(bookName as string)
+  ) {
+    bible.goToBook(route.params.book as BookName);
+  }
 }
-if (route.params.chapterNo) {
-  const cn = parseInt(route.params.chapterNo as string);
-  bible.goToChapter(cn);
+if (route.params.chapter) {
+  const chapterNo = parseInt(route.params.chapter as string);
+  if (chapterNo > 0 && chapterNo <= chapterCount.value) {
+    bible.goToChapter(chapterNo);
+  }
 }
+
+watch(
+  () => book.value,
+  (book) => {
+    if (book) {
+      router.push({
+        name: 'reading',
+        params: { book: book, chapter: chapter.value }
+      });
+    }
+  }
+);
+watch(
+  () => chapter.value,
+  (chapter) => {
+    if (chapter) {
+      router.push({
+        name: 'reading',
+        params: { book: book.value, chapter: chapter }
+      });
+    }
+  }
+);
 </script>
 
 <template>
@@ -43,9 +76,8 @@ if (route.params.chapterNo) {
       dense
       options-dense
       v-on:update:model-value="bible.goToBook"
-      :model-value="bible.book"
-      :options="books"
-      option-label="name">
+      :model-value="book"
+      :options="bookInfos.map((info) => info.name)">
       <template v-slot:prepend>
         <q-icon name="book" color="accent" />
       </template>
@@ -58,7 +90,7 @@ if (route.params.chapterNo) {
       v-on:update:model-value="bible.goToChapter"
       :model-value="chapter"
       :options="
-        Array(book.chapters)
+        Array(chapterCount)
           .fill(0)
           .map((_, idx) => 1 + idx)
       ">

@@ -2,34 +2,18 @@ import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/supabase';
 
-interface APINav {
-  chineses: string;
-  engs: string;
-  chap: number;
-  sec: number;
-}
-interface APIRecord extends APINav {
-  bible_text: string;
-}
-interface APIResponse {
-  next: APINav;
-  prev: APINav;
-  proc: number;
-  record: APIRecord[];
-  record_count: number;
-  status: string;
-  v_name: string | null;
-  version: string;
-}
+import bible_dict from '@/stores/bible_dict.json';
 
-export interface Book {
-  name: string;
-  abbrv: string;
+export type BookName = keyof typeof bible_dict;
+
+export interface BookInfo {
+  name: BookName;
   chapters: number;
+  abbrv: string;
 }
 
 export const useBibleStore = defineStore('bible', () => {
-  const books = ref<Book[]>([
+  const bookInfos = ref<BookInfo[]>([
     { name: '創世記', chapters: 50, abbrv: '創' },
     { name: '出埃及記', chapters: 40, abbrv: '出' },
     { name: '利未記', chapters: 27, abbrv: '利' },
@@ -98,73 +82,12 @@ export const useBibleStore = defineStore('bible', () => {
     { name: '啟示錄', chapters: 22, abbrv: '啟' }
   ]);
 
-  const bookIdx = ref(0);
-  const book = computed(() => books.value[bookIdx.value]);
-  const chapter = ref(1);
-
-  function goPrevChapter() {
-    if (chapter.value > 1) {
-      chapter.value--;
-    } else if (bookIdx.value > 0) {
-      bookIdx.value--;
-      chapter.value = books.value[bookIdx.value].chapters;
-    }
-    fetchVerses();
-  }
-  function goNextChapter() {
-    if (chapter.value < book.value.chapters) {
-      chapter.value++;
-    } else if (bookIdx.value < books.value.length - 1) {
-      bookIdx.value++;
-      chapter.value = 1;
-    }
-    fetchVerses();
-  }
-  function goToBook(book: Book | number) {
-    bookIdx.value =
-      typeof book === 'number' ? book - 1 : books.value.indexOf(book);
-    chapter.value = 1;
-    fetchVerses();
-  }
-
-  function goToChapter(chap: number) {
-    if (chap > 0 && chap <= book.value.chapters) {
-      chapter.value = chap;
-    }
-    fetchVerses();
-  }
-
   function matchReadRecord() {
     return {
       reader: supabase.auth.user()?.id,
       book: bookIdx.value + 1,
       chapter: chapter.value
     };
-  }
-
-  // we do with-in store side-effects here
-  function fetchVerses() {
-    fetch(
-      'https://bible.fhl.net/json/qb.php?gb=0&chineses=' +
-        book.value.abbrv +
-        '&chap=' +
-        chapter.value
-    )
-      .then((res) => res.json())
-      .then((data: APIResponse) => {
-        verses.value = data.record.map((r: APIRecord) => r.bible_text);
-      });
-
-    supabase
-      .from('readings_done')
-      .select('*')
-      .match(matchReadRecord())
-      .then(({ data, error }) => {
-        if (error) return;
-        if (data) {
-          read.value = data.length > 0;
-        }
-      });
   }
 
   function markRead() {
@@ -190,23 +113,95 @@ export const useBibleStore = defineStore('bible', () => {
         }
       });
   }
+  function getTodaysChapter() {
+    const today = new Date();
+    const dayOne = new Date('2022-09-18');
 
-  const verses = ref<string[]>([]);
+    const daysSince = Math.floor(
+      (today.getTime() - dayOne.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    const numSundays = () => {
+      let numSundays = 0;
+      for (let i = 0; i < daysSince; i++) {
+        const date = new Date(dayOne.getTime() + i * 24 * 60 * 60 * 1000);
+        if (date.getDay() === 0) {
+          numSundays++;
+        }
+      }
+      return numSundays;
+    };
+
+    let targetReadings = daysSince + numSundays();
+
+    for (let i = 0; i < 66; i++) {
+      if (bookInfos.value[i].chapters >= targetReadings) {
+        return {
+          book: bookInfos.value[i],
+          chapter: targetReadings
+        };
+      } else {
+        targetReadings -= bookInfos.value[i].chapters;
+      }
+    }
+  }
+
   const read = ref(false);
+  const book = ref<BookName>('創世記');
+  const chapter = ref(1);
+  const chapterCount = computed(() => {
+    return bookInfos.value.filter((b) => b.name === book.value)[0].chapters;
+  });
+  const verses = computed(() => {
+    const bookDict = bible_dict[book.value];
+    const chapterDict =
+      bookDict[chapter.value.toString() as keyof typeof bookDict];
+    return Object.keys(chapterDict).map((key) => {
+      return chapterDict[key as keyof typeof chapterDict];
+    });
+  });
+  const bookIdx = computed(() => {
+    return bookInfos.value.findIndex((b) => b.name === book.value);
+  });
 
-  fetchVerses();
+  function goPrevChapter() {
+    if (chapter.value > 1) {
+      chapter.value--;
+    } else if (bookIdx.value > 0) {
+      const bookInfo = bookInfos.value[bookIdx.value - 1];
+      book.value = bookInfo.name;
+      chapter.value = bookInfo.chapters;
+    }
+  }
+  function goNextChapter() {
+    if (chapter.value < chapterCount.value) {
+      chapter.value++;
+    } else if (bookIdx.value < bookInfos.value.length - 1) {
+      book.value = bookInfos.value[bookIdx.value + 1].name;
+      chapter.value = 1;
+    }
+  }
+  function goToBook(bookName: BookName) {
+    book.value = bookName;
+    chapter.value = 1;
+  }
+  function goToChapter(chapterNo: number) {
+    chapter.value = chapterNo;
+  }
 
   return {
     read,
     markRead,
     markUnread,
-    books,
+    bookInfos,
     book,
     chapter,
+    chapterCount,
     goPrevChapter,
     goNextChapter,
     goToBook,
     goToChapter,
-    verses
+    verses,
+    getTodaysChapter
   };
 });

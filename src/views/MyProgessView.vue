@@ -1,26 +1,25 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { supabase } from '@/supabase';
-import { useBibleStore } from '@/stores/bible';
+import { type BookInfo, useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
-import type { Book } from '@/stores/bible';
 const bible = useBibleStore();
-const { books } = storeToRefs(bible);
+const { bookInfos } = storeToRefs(bible);
 
-interface BookReadingRecord extends Book {
+interface BookReadingRecord extends BookInfo {
   bookNo: number;
   chaptersRead: boolean[];
 }
 
 const bookReadingRecords = ref<BookReadingRecord[]>([]);
 let bookNo = 1;
-for (const book of books.value) {
-  for (let chapter = 1; chapter <= book.chapters; chapter++) {
+for (const bookInfo of bookInfos.value) {
+  for (let chapter = 1; chapter <= bookInfo.chapters; chapter++) {
     if (chapter === 1) {
       bookReadingRecords.value.push({
         bookNo,
         chaptersRead: [false],
-        ...book
+        ...bookInfo
       });
     } else {
       bookReadingRecords.value[bookNo - 1].chaptersRead.push(false);
@@ -42,6 +41,8 @@ supabase
       }
     }
   });
+
+const todayTarget = bible.getTodaysChapter();
 </script>
 
 <template>
@@ -58,14 +59,20 @@ supabase
             v-for="(read, index) of bookRecord.chaptersRead"
             :key="index">
             <div
-              :class="read ? 'bg-green' : 'bg-grey-4'"
               class="progress-block"
+              :class="{
+                'bg-green': read,
+                'bg-grey-4': !read,
+                'target-block':
+                  todayTarget?.book.abbrv === bookRecord.abbrv &&
+                  todayTarget.chapter === index + 1
+              }"
               @click="
                 $router.push({
                   name: 'reading',
                   params: {
-                    bookNo: bookRecord.bookNo,
-                    chapterNo: index + 1
+                    book: bookRecord.name,
+                    chapter: index + 1
                   }
                 })
               ">
@@ -80,12 +87,15 @@ supabase
 
 <style scoped>
 .progress-block {
-  width: 12px;
-  height: 12px;
+  width: 24px;
+  height: 24px;
   margin: 2px;
 }
 .progress-block:hover {
   cursor: pointer;
   outline: auto 1px;
+}
+.target-block {
+  border: 2px solid red;
 }
 </style>
