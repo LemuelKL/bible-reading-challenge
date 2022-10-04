@@ -75,7 +75,7 @@ supabase.auth.onAuthStateChange(
 );
 
 const $q = useQuasar();
-$q.dark.set(LocalStorage.getItem('darkMode'));
+$q.dark.set(LocalStorage.getItem('darkMode') || false);
 </script>
 
 <template>
