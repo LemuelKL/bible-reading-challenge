@@ -5,11 +5,11 @@ import { supabase } from './supabase';
 import { useUserStore } from './stores/user';
 import SBAuth from './components/SBAuth.vue';
 import type { AuthChangeEvent, Session } from '@supabase/gotrue-js';
+import ReadingControl from './components/ReadingControl.vue';
 import { useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
 const bible = useBibleStore();
 const { targetReadings } = storeToRefs(bible);
-import ReadingControl from './components/ReadingControl.vue';
 
 const menuList = [
   {
@@ -90,6 +90,9 @@ supabase.auth.onAuthStateChange(
             </q-toolbar-title>
             <q-space />
             <ReadingControl v-if="$route.name === 'reading'" />
+            <q-toolbar-title v-if="$route.name === 'my-progress'" align="right">
+              {{ targetReadings }}
+            </q-toolbar-title>
           </q-toolbar>
         </q-header>
 
