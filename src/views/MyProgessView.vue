@@ -1,46 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { supabase } from '@/supabase';
-import { type BookInfo, useBibleStore } from '@/stores/bible';
+import { useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
 const bible = useBibleStore();
-const { bookInfos } = storeToRefs(bible);
-
-interface BookReadingRecord extends BookInfo {
-  bookNo: number;
-  chaptersRead: boolean[];
-}
-
-const bookReadingRecords = ref<BookReadingRecord[]>([]);
-let bookNo = 1;
-for (const bookInfo of bookInfos.value) {
-  for (let chapter = 1; chapter <= bookInfo.chapters; chapter++) {
-    if (chapter === 1) {
-      bookReadingRecords.value.push({
-        bookNo,
-        chaptersRead: [false],
-        ...bookInfo
-      });
-    } else {
-      bookReadingRecords.value[bookNo - 1].chaptersRead.push(false);
-    }
-  }
-  bookNo++;
-}
-supabase
-  .from('readings_done')
-  .select('book, chapter')
-  .eq('reader', supabase.auth.user()?.id)
-  .order('book, chapter', { ascending: true })
-  .then(({ data }) => {
-    if (data) {
-      for (const record of data) {
-        bookReadingRecords.value[record.book - 1].chaptersRead[
-          record.chapter - 1
-        ] = true;
-      }
-    }
-  });
+const { readRecords, bookInfos } = storeToRefs(bible);
 
 const todayTarget = bible.getTodaysChapter();
 </script>
@@ -48,35 +10,29 @@ const todayTarget = bible.getTodaysChapter();
 <template>
   <table style="word-break: keep-all">
     <tbody>
-      <tr
-        v-for="bookRecord in bookReadingRecords.sort(
-          (a, b) => a.bookNo - b.bookNo
-        )"
-        :key="bookRecord.bookNo">
-        <th>{{ bookRecord.name }}</th>
+      <tr v-for="bookInfo in bookInfos" :key="bookInfo.name">
+        <th>{{ bookInfo.name }}</th>
         <td class="row" style="height: 100%">
-          <template
-            v-for="(read, index) of bookRecord.chaptersRead"
-            :key="index">
+          <template v-for="chapter in bookInfo.chapters" :key="chapter">
             <div
               class="progress-block"
               :class="{
-                'bg-green': read,
-                'bg-grey-4': !read,
+                'bg-green': readRecords[`${bookInfo.name}-${chapter}`],
+                'bg-grey-4': !readRecords[`${bookInfo.name}-${chapter}`],
                 'target-block':
-                  todayTarget?.book.abbrv === bookRecord.abbrv &&
-                  todayTarget.chapter === index + 1
+                  todayTarget?.book.name === bookInfo.name &&
+                  todayTarget.chapter === chapter
               }"
               @click="
                 $router.push({
                   name: 'reading',
                   params: {
-                    book: bookRecord.name,
-                    chapter: index + 1
+                    book: bookInfo.name,
+                    chapter: chapter
                   }
                 })
               ">
-              <q-tooltip>{{ index + 1 }}</q-tooltip>
+              <q-tooltip>{{ chapter }}</q-tooltip>
             </div>
           </template>
         </td>

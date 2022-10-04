@@ -82,6 +82,29 @@ export const useBibleStore = defineStore('bible', () => {
     { name: '啟示錄', chapters: 22, abbrv: '啟' }
   ]);
 
+  const readRecords = ref<{ [id: string]: boolean }>({});
+  for (const bookInfo of bookInfos.value) {
+    for (let i = 1; i <= bookInfo.chapters; i++) {
+      readRecords.value[`${bookInfo.name}-${i}`] = false;
+    }
+  }
+
+  supabase
+    .from('readings_done')
+    .select('*')
+    .match({ reader: supabase.auth.user()?.id })
+    .then(({ data, error }) => {
+      if (error) {
+        console.error(error);
+      } else if (data) {
+        for (const record of data) {
+          readRecords.value[
+            `${bookInfos.value[record.book - 1].name}-${record.chapter}`
+          ] = true;
+        }
+      }
+    });
+
   function matchReadRecord() {
     return {
       reader: supabase.auth.user()?.id,
@@ -97,7 +120,7 @@ export const useBibleStore = defineStore('bible', () => {
       .then(({ data, error }) => {
         if (error) return;
         if (data.length > 0) {
-          read.value = true;
+          readRecords.value[chapterKey.value] = true;
         }
       });
   }
@@ -109,7 +132,7 @@ export const useBibleStore = defineStore('bible', () => {
       .then(({ data, error }) => {
         if (error) return;
         if (data.length > 0) {
-          read.value = false;
+          readRecords.value[chapterKey.value] = false;
         }
       });
   }
@@ -146,7 +169,10 @@ export const useBibleStore = defineStore('bible', () => {
     }
   }
 
-  const read = ref(false);
+  const chapterKey = computed(() => `${book.value}-${chapter.value}`);
+  const read = computed(() => {
+    return readRecords.value[chapterKey.value];
+  });
   const book = ref<BookName>('創世記');
   const chapter = ref(1);
   const chapterCount = computed(() => {
@@ -190,6 +216,7 @@ export const useBibleStore = defineStore('bible', () => {
   }
 
   return {
+    readRecords,
     read,
     markRead,
     markUnread,
