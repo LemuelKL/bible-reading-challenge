@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import UserProfile from '@/components/UserProfile.vue';
-// import ChallengeSettings from '@/components/ChallengeSettings.vue';
+import { useQuasar } from 'quasar';
+const $q = useQuasar();
 </script>
 
 <template>
   <div class="column q-gutter-md">
     <UserProfile />
-    <!-- <ChallengeSettings /> -->
+    <q-toggle
+      :model-value="$q.dark.isActive"
+      @update:model-value="$q.dark.set(!$q.dark.isActive)"
+      label="Dark Mode"></q-toggle>
   </div>
 </template>

@@ -41,7 +41,7 @@ supabase
 <template>
   <q-markup-table flat bordered>
     <thead>
-      <tr class="bg-grey-3">
+      <tr>
         <th>參加者</th>
         <th>已完成</th>
         <th>進度</th>

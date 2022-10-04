@@ -74,7 +74,7 @@ supabase.auth.onAuthStateChange(
 </script>
 
 <template>
-  <main style="background-color: #faf8de">
+  <main>
     <div class="q-pa-none" v-if="user.sbUser">
       <q-layout
         view="hHh Lpr lff"
@@ -97,8 +97,7 @@ supabase.auth.onAuthStateChange(
           show-if-above
           :width="200"
           :breakpoint="500"
-          bordered
-          class="bg-grey-3">
+          bordered>
           <q-scroll-area class="fit">
             <q-list>
               <template v-for="(menuItem, index) in menuList" :key="index">
