@@ -1,4 +1,5 @@
-import { computed, ref } from 'vue';
+import { LocalStorage } from 'quasar';
+import { computed, ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/supabase';
 
@@ -173,12 +174,20 @@ export const useBibleStore = defineStore('bible', () => {
     }
   }
 
+  const book = ref<BookName>(LocalStorage.getItem('book') || '創世記');
+  const chapter = ref(parseInt(LocalStorage.getItem('chapter') || '1'));
+
+  watch(book, (newBook) => {
+    LocalStorage.set('book', newBook);
+  });
+  watch(chapter, (newChapter) => {
+    LocalStorage.set('chapter', newChapter);
+  });
+
   const chapterKey = computed(() => `${book.value}-${chapter.value}`);
   const read = computed(() => {
     return readRecords.value[chapterKey.value];
   });
-  const book = ref<BookName>('創世記');
-  const chapter = ref(1);
   const chapterCount = computed(() => {
     return bookInfos.value.filter((b) => b.name === book.value)[0].chapters;
   });
