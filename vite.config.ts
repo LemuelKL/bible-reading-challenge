@@ -26,8 +26,7 @@ export default defineConfig({
           {
             src: 'bible.png',
             sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
+            type: 'image/png'
           }
         ],
         start_url: '/'
