@@ -2,6 +2,7 @@
 import { useQuasar } from 'quasar';
 import { type BookName, useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 const bible = useBibleStore();
 const { read, book, bookInfos, chapter, chapterCount } = storeToRefs(bible);
 
@@ -21,6 +22,10 @@ function handleToggleRead() {
     });
   }
 }
+
+const abbrv = computed(() => {
+  return bookInfos.value.filter((info) => info.name == book.value)[0].abbrv;
+});
 </script>
 
 <template>
@@ -31,7 +36,7 @@ function handleToggleRead() {
       dense
       options-dense
       v-on:update:model-value="bible.goToBook"
-      :model-value="book"
+      :model-value="abbrv"
       :options="bookInfos.map((info) => info.name)"></q-select>
     <q-select
       dark
