@@ -8,6 +8,5 @@ export const useUserStore = defineStore('user', () => {
     first_name: string;
     last_name: string;
   }>(null);
-
   return { sbUser, sbProfile };
 });

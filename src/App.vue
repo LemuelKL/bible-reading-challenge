@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useQuasar, LocalStorage } from 'quasar';
 import { RouterView } from 'vue-router';
 import { ref } from 'vue';
 import { supabase } from './supabase';
@@ -72,6 +73,9 @@ supabase.auth.onAuthStateChange(
     }
   }
 );
+
+const $q = useQuasar();
+$q.dark.set(LocalStorage.getItem('darkMode'));
 </script>
 
 <template>

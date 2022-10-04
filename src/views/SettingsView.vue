@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import UserProfile from '@/components/UserProfile.vue';
-import { useQuasar } from 'quasar';
+import { useQuasar, LocalStorage } from 'quasar';
 const $q = useQuasar();
+
+function toggleDarkMode() {
+  $q.dark.toggle();
+  LocalStorage.set('darkMode', $q.dark.isActive);
+}
 </script>
 
 <template>
@@ -9,7 +14,7 @@ const $q = useQuasar();
     <UserProfile />
     <q-toggle
       :model-value="$q.dark.isActive"
-      @update:model-value="$q.dark.set(!$q.dark.isActive)"
+      @update:model-value="toggleDarkMode"
       label="Dark Mode"></q-toggle>
   </div>
 </template>
