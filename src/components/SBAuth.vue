@@ -19,10 +19,9 @@ async function signInWithGoogle() {
   <div style="height: 100vh" class="row justify-center items-center">
     <q-card flat bordered class="bg-grey-1">
       <q-card-section class="welcome">
-        <div class="text-h4">Bible Reading Challenge</div>
+        <div class="text-h4">1189 Challenge</div>
         <div class="text-subtitle2 text-grey-6" style="max-width: 250px">
-          May God give you the grace to pray and the desire to read the Holy
-          Bible.
+          1095日讀完1189章聖經
         </div>
       </q-card-section>
       <q-separator></q-separator>
@@ -32,7 +31,7 @@ async function signInWithGoogle() {
           no-caps
           outline
           align="around"
-          label="Continue with Google"
+          label="用 Google 登入"
           icon="img:assets/g.png" />
       </q-card-actions>
     </q-card>

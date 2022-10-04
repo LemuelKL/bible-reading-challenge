@@ -38,9 +38,9 @@ user.$subscribe(() => {
 <template>
   <q-card flat bordered>
     <q-card-section class="row justify-between">
-      <div class="text-h5">My Profile</div>
+      <div class="text-h5">個人資料</div>
       <q-space></q-space>
-      <q-btn outline @click="supabase.auth.signOut()">Logout</q-btn>
+      <q-btn outline @click="supabase.auth.signOut()">登出</q-btn>
     </q-card-section>
     <q-separator />
     <q-card-section class="q-gutter-xs">
@@ -63,7 +63,7 @@ user.$subscribe(() => {
         color="primary"
         @click="updateProfile"
         :disable="updatingProfile">
-        {{ sbProfile ? 'Update' : 'Create' }}
+        {{ sbProfile ? '更新' : '加入' }}
       </q-btn>
     </q-card-actions>
   </q-card>

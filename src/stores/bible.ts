@@ -89,21 +89,25 @@ export const useBibleStore = defineStore('bible', () => {
     }
   }
 
-  supabase
-    .from('readings_done')
-    .select('*')
-    .match({ reader: supabase.auth.user()?.id })
-    .then(({ data, error }) => {
-      if (error) {
-        console.error(error);
-      } else if (data) {
-        for (const record of data) {
-          readRecords.value[
-            `${bookInfos.value[record.book - 1].name}-${record.chapter}`
-          ] = true;
-        }
-      }
-    });
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN') {
+      supabase
+        .from('readings_done')
+        .select('*')
+        .match({ reader: supabase.auth.user()?.id })
+        .then(({ data, error }) => {
+          if (error) {
+            console.error(error);
+          } else if (data) {
+            for (const record of data) {
+              readRecords.value[
+                `${bookInfos.value[record.book - 1].name}-${record.chapter}`
+              ] = true;
+            }
+          }
+        });
+    }
+  });
 
   function matchReadRecord() {
     return {
@@ -215,7 +219,29 @@ export const useBibleStore = defineStore('bible', () => {
     chapter.value = chapterNo;
   }
 
+  const today = new Date();
+  const dayOne = new Date('2022-09-18');
+
+  const daysSince = Math.floor(
+    (today.getTime() - dayOne.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  const numSundays = () => {
+    let numSundays = 0;
+    for (let i = 0; i < daysSince; i++) {
+      const date = new Date(dayOne.getTime() + i * 24 * 60 * 60 * 1000);
+      if (date.getDay() === 0) {
+        numSundays++;
+      }
+    }
+    return numSundays;
+  };
+
+  const targetReadings = ref(0);
+  targetReadings.value = daysSince + numSundays();
+
   return {
+    targetReadings,
     readRecords,
     read,
     markRead,

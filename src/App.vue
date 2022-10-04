@@ -5,35 +5,39 @@ import { supabase } from './supabase';
 import { useUserStore } from './stores/user';
 import SBAuth from './components/SBAuth.vue';
 import type { AuthChangeEvent, Session } from '@supabase/gotrue-js';
+import { useBibleStore } from '@/stores/bible';
+import { storeToRefs } from 'pinia';
+const bible = useBibleStore();
+const { targetReadings } = storeToRefs(bible);
 
 const menuList = [
   {
     icon: 'play_lesson',
-    label: 'Reading',
+    label: '經文閲讀',
     path: '/reading',
     separator: true
   },
   {
     icon: 'leaderboard',
-    label: 'Leaderboard',
+    label: '排行榜',
     path: '/leaderboard',
     separator: false
   },
   {
     icon: 'view_list',
-    label: 'My Progress',
+    label: '我的進度',
     path: '/my-progress',
     separator: true
   },
   {
     icon: 'settings',
-    label: 'Settings',
+    label: '設定',
     path: '/settings',
     separator: false
   },
   {
     icon: 'help',
-    label: 'Help',
+    label: '幫助',
     path: '/help',
     separator: false
   }
@@ -70,7 +74,7 @@ supabase.auth.onAuthStateChange(
 </script>
 
 <template>
-  <main>
+  <main style="background-color: #faf8de">
     <div class="q-pa-none" v-if="user.sbUser">
       <q-layout
         view="hHh Lpr lff"
@@ -80,7 +84,11 @@ supabase.auth.onAuthStateChange(
         <q-header elevated class="bg-black">
           <q-toolbar>
             <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
-            <q-toolbar-title>Bible Reading Challenge</q-toolbar-title>
+            <q-toolbar-title>1189 Challenge</q-toolbar-title>
+            <q-space></q-space>
+            <q-toolbar-title align="right">
+              {{ targetReadings }}
+            </q-toolbar-title>
           </q-toolbar>
         </q-header>
 
