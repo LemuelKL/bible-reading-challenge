@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { scroll } from 'quasar';
 import { useRoute } from 'vue-router';
 import { watch } from 'vue';
 import { type BookName, useBibleStore } from '@/stores/bible';
@@ -47,11 +48,31 @@ watch(
     }
   }
 );
+
+const { getScrollTarget, setVerticalScrollPosition } = scroll;
+watch(
+  () => verses.value,
+  (verses) => {
+    if (verses) {
+      const verse = verses[0];
+      if (verse) {
+        const el = document.getElementById('verse-0');
+        if (!el) return;
+        const target = getScrollTarget(el);
+        const offset = el.offsetTop;
+        setVerticalScrollPosition(target, offset, 1000);
+      }
+    }
+  }
+);
 </script>
 
 <template>
   <table class="q-ma-sm">
-    <tr v-for="[idx, verse] of verses.entries()" :key="idx">
+    <tr
+      v-for="[idx, verse] of verses.entries()"
+      :key="idx"
+      :id="`verse-${idx}`">
       <td>{{ idx + 1 }}</td>
       <td>{{ verse }}</td>
     </tr>
