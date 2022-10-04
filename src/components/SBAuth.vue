@@ -32,7 +32,7 @@ async function signInWithGoogle() {
           outline
           align="around"
           label="用 Google 登入"
-          icon="img:assets/g.png" />
+          icon="img:/assets/g.png" />
       </q-card-actions>
     </q-card>
   </div>
