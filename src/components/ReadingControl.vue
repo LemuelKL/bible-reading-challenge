@@ -46,7 +46,7 @@ function handleToggleRead() {
           .map((_, idx) => 1 + idx)
       "></q-select>
 
-    <q-btn flat dense icon="arrow_back" @click="bible.goNextChapter" />
+    <q-btn flat dense icon="arrow_back" @click="bible.goPrevChapter" />
     <q-btn flat dense icon="arrow_forward" @click="bible.goNextChapter" />
     <q-btn
       flat
