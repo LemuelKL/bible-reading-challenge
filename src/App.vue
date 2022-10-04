@@ -9,6 +9,7 @@ import { useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
 const bible = useBibleStore();
 const { targetReadings } = storeToRefs(bible);
+import ReadingControl from './components/ReadingControl.vue';
 
 const menuList = [
   {
@@ -81,14 +82,14 @@ supabase.auth.onAuthStateChange(
         container
         style="height: 100vh"
         class="shadow-2">
-        <q-header elevated class="bg-black">
-          <q-toolbar>
+        <q-header elevated class="row">
+          <q-toolbar class="col bg-black">
             <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
-            <q-toolbar-title>1189 Challenge</q-toolbar-title>
-            <q-space></q-space>
-            <q-toolbar-title align="right">
-              {{ targetReadings }}
+            <q-toolbar-title class="mobile-hide">
+              1189 Challenge
             </q-toolbar-title>
+            <q-space />
+            <ReadingControl v-if="$route.name === 'reading'" />
           </q-toolbar>
         </q-header>
 
