@@ -10,7 +10,7 @@ import ReadingControl from './components/ReadingControl.vue';
 import { useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
 const bible = useBibleStore();
-const { targetReadings } = storeToRefs(bible);
+const { targetReadings, readCount } = storeToRefs(bible);
 
 const menuList = [
   {
@@ -95,7 +95,7 @@ $q.dark.set(LocalStorage.getItem('darkMode') || false);
             <q-space />
             <ReadingControl v-if="$route.name === 'reading'" />
             <q-toolbar-title v-if="$route.name === 'my-progress'" align="right">
-              {{ targetReadings }}
+              {{ readCount }} / {{ targetReadings }}
             </q-toolbar-title>
           </q-toolbar>
         </q-header>
