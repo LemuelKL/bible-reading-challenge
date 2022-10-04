@@ -14,7 +14,25 @@ export default defineConfig({
     quasar({
       sassVariables: 'src/quasar-variables.sass'
     }),
-    VitePWA({ registerType: 'autoUpdate' })
+    VitePWA({
+      registerType: 'autoUpdate',
+      devOptions: { enabled: true },
+      manifest: {
+        name: 'Enoch Bible Reading Challenge',
+        short_name: 'Enoch BRC',
+        description:
+          'A Bible reading challenge to complete all 1189 chapters in 1095 days',
+        icons: [
+          {
+            src: 'bible.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ],
+        start_url: '/'
+      }
+    })
   ],
   resolve: {
     alias: {
