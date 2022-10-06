@@ -49,10 +49,17 @@ supabase
     </thead>
     <tbody>
       <tr v-for="record in leaderboard" :key="record.reader.id">
-        <td class="text-center">
+        <td
+          class="text-center"
+          v-if="record.reader.firstName + record.reader.lastName !== ''">
           {{ record.reader.firstName }} {{ record.reader.lastName }}
         </td>
-        <td class="text-center">{{ record.count }}</td>
+        <td v-else class="text-center">
+          <div class="name-not-set">{{ '［未設置姓名］' }}</div>
+        </td>
+        <td class="text-center" style="font-family: monospace">
+          {{ record.count }}
+        </td>
         <td class="text-center">
           <q-icon
             v-if="record.count > targetReadings"
@@ -74,3 +81,9 @@ supabase
     </tbody>
   </q-markup-table>
 </template>
+
+<style scoped>
+.name-not-set {
+  opacity: calc(0.5);
+}
+</style>

@@ -15,7 +15,7 @@ const todayTarget = bible.getTodaysChapter();
         <td class="row" style="height: 100%">
           <template v-for="chapter in bookInfo.chapters" :key="chapter">
             <div
-              class="progress-block"
+              class="progress-block row justify-center items-center"
               :class="{
                 'bg-green': readRecords[`${bookInfo.name}-${chapter}`],
                 'bg-grey-4': !readRecords[`${bookInfo.name}-${chapter}`],
@@ -39,7 +39,19 @@ const todayTarget = bible.getTodaysChapter();
                 user-select: none;
                 -o-user-select: none;
               ">
-              <q-tooltip>{{ chapter }}</q-tooltip>
+              <div
+                v-if="chapter % 5 == 0"
+                style="font-family: monospace"
+                class="text-grey-6">
+                {{ chapter }}
+              </div>
+              <q-tooltip
+                anchor="top middle"
+                self="bottom middle"
+                class="bg-yellow-4 text-black text-bold"
+                style="font-family: monospace">
+                {{ chapter }}
+              </q-tooltip>
             </div>
           </template>
         </td>
