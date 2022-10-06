@@ -31,6 +31,13 @@ const todayTarget = bible.getTodaysChapter();
                     chapter: chapter
                   }
                 })
+              "
+              style="
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -o-user-select: none;
               ">
               <q-tooltip>{{ chapter }}</q-tooltip>
             </div>

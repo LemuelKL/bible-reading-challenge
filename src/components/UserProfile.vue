@@ -46,16 +46,13 @@ user.$subscribe(() => {
     <q-card-section class="q-gutter-xs">
       <q-input standout :model-value="user.sbUser?.email" dense readonly />
 
-      <q-input
-        outlined
-        dense
-        v-model="firstName"
-        placeholder="First name"></q-input>
-      <q-input
-        outlined
-        dense
-        v-model="lastName"
-        placeholder="Last name"></q-input>
+      <q-input outlined dense v-model="firstName" placeholder="名"></q-input>
+      <q-input outlined dense v-model="lastName" placeholder="姓"></q-input>
+      <q-item>
+        <q-item-section>
+          <div>顯示為：{{ firstName }} {{ lastName }}</div>
+        </q-item-section>
+      </q-item>
     </q-card-section>
     <q-card-actions align="right">
       <q-btn

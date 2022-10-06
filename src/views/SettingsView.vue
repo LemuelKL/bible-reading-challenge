@@ -15,6 +15,6 @@ function toggleDarkMode() {
     <q-toggle
       :model-value="$q.dark.isActive"
       @update:model-value="toggleDarkMode"
-      label="Dark Mode"></q-toggle>
+      label="黑暗模式"></q-toggle>
   </div>
 </template>

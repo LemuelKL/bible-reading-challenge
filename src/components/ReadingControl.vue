@@ -13,8 +13,8 @@ function handleToggleRead() {
     bible.markRead();
   } else {
     $q.dialog({
-      title: 'Mark as unread',
-      message: 'Are you sure you want to mark this chapter as unread?',
+      title: '標示未讀',
+      message: '確定要標示此章為未讀嗎？',
       cancel: true,
       persistent: true
     }).onOk(() => {
