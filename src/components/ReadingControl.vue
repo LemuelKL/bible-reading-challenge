@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { type BookName, useBibleStore } from '@/stores/bible';
+import { useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 const bible = useBibleStore();
