@@ -247,7 +247,7 @@ export const useBibleStore = defineStore('bible', () => {
   };
 
   const targetReadings = ref(0);
-  targetReadings.value = daysSince + numSundays();
+  targetReadings.value = Math.min(daysSince + numSundays(), 1189);
 
   const readCount = computed(() => {
     return Object.values(readRecords.value).filter((r) => r).length;
