@@ -90,30 +90,31 @@ export const useBibleStore = defineStore('bible', () => {
     }
   }
 
-  supabase.auth.onAuthStateChange((event) => {
+  supabase.auth.onAuthStateChange(async (event) => {
     if (event === 'SIGNED_IN') {
       supabase
         .from('readings_done')
         .select('*')
-        .match({ reader: supabase.auth.user()?.id })
+        .match({ reader: (await supabase.auth.getUser()).data?.user?.id })
         .limit(1189)
         .then(({ data, error }) => {
           if (error) {
             console.error(error);
           } else if (data) {
             for (const record of data) {
-              readRecords.value[
-                `${bookInfos.value[record.book - 1].name}-${record.chapter}`
-              ] = true;
+              const bookInfo = bookInfos.value[record.book - 1];
+              if (bookInfo) {
+                readRecords.value[`${bookInfo.name}-${record.chapter}`] = true;
+              }
             }
           }
         });
     }
   });
 
-  function matchReadRecord() {
+  async function matchReadRecord() {
     return {
-      reader: supabase.auth.user()?.id,
+      reader: (await supabase.auth.getUser()).data?.user?.id,
       book: bookIdx.value + 1,
       chapter: chapter.value
     };
@@ -123,9 +124,9 @@ export const useBibleStore = defineStore('bible', () => {
     supabase
       .from('readings_done')
       .upsert(matchReadRecord())
-      .then(({ data, error }) => {
+      .then(({ data, error }: { data: any[] | null; error: any }) => {
         if (error) return;
-        if (data.length > 0) {
+        if (data && data.length > 0) {
           readRecords.value[chapterKey.value] = true;
         }
       });
@@ -135,9 +136,9 @@ export const useBibleStore = defineStore('bible', () => {
       .from('readings_done')
       .delete()
       .match(matchReadRecord())
-      .then(({ data, error }) => {
+      .then(({ data, error }: { data: any[] | null; error: any }) => {
         if (error) return;
-        if (data.length > 0) {
+        if (data && data.length > 0) {
           readRecords.value[chapterKey.value] = false;
         }
       });
@@ -164,13 +165,13 @@ export const useBibleStore = defineStore('bible', () => {
     let targetReadings = daysSince + numSundays();
 
     for (let i = 0; i < 66; i++) {
-      if (bookInfos.value[i].chapters >= targetReadings) {
-        return {
-          book: bookInfos.value[i],
-          chapter: targetReadings
-        };
+      const book = bookInfos.value[i];
+      if (!book) continue; // skip undefined entries
+
+      if (book.chapters >= targetReadings) {
+        return { book, chapter: targetReadings };
       } else {
-        targetReadings -= bookInfos.value[i].chapters;
+        targetReadings -= book.chapters;
       }
     }
   }
@@ -190,7 +191,8 @@ export const useBibleStore = defineStore('bible', () => {
     return readRecords.value[chapterKey.value];
   });
   const chapterCount = computed(() => {
-    return bookInfos.value.filter((b) => b.name === book.value)[0].chapters;
+    const found = bookInfos.value.find((b) => b.name === book.value);
+    return found ? found.chapters : 0;
   });
   const verses = computed(() => {
     const bookDict = bible_dict[book.value];
@@ -209,16 +211,21 @@ export const useBibleStore = defineStore('bible', () => {
       chapter.value--;
     } else if (bookIdx.value > 0) {
       const bookInfo = bookInfos.value[bookIdx.value - 1];
-      book.value = bookInfo.name;
-      chapter.value = bookInfo.chapters;
+      if (bookInfo) {
+        book.value = bookInfo.name;
+        chapter.value = bookInfo.chapters;
+      }
     }
   }
   function goNextChapter() {
     if (chapter.value < chapterCount.value) {
       chapter.value++;
     } else if (bookIdx.value < bookInfos.value.length - 1) {
-      book.value = bookInfos.value[bookIdx.value + 1].name;
-      chapter.value = 1;
+      const nextBookInfo = bookInfos.value[bookIdx.value + 1];
+      if (nextBookInfo) {
+        book.value = nextBookInfo.name;
+        chapter.value = 1;
+      }
     }
   }
   function goToBook(bookName: BookName) {

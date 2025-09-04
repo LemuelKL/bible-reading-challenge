@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { useBibleStore } from '@/stores/bible';
+import { useBibleStore, type BookInfo } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 const bible = useBibleStore();
@@ -24,7 +24,8 @@ function handleToggleRead() {
 }
 
 const abbrv = computed(() => {
-  return bookInfos.value.filter((info) => info.name == book.value)[0].abbrv;
+  const found = bookInfos.value.find((info: BookInfo) => info.name == book.value);
+  return found ? found.abbrv : '??';
 });
 </script>
 
@@ -37,7 +38,7 @@ const abbrv = computed(() => {
       options-dense
       v-on:update:model-value="bible.goToBook"
       :model-value="abbrv"
-      :options="bookInfos.map((info) => info.name)"></q-select>
+      :options="bookInfos.map((info: BookInfo) => info.name)"></q-select>
     <q-select
       dark
       outlined
