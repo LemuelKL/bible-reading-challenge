@@ -53,6 +53,9 @@ ALTER TABLE ONLY public.readings_done
     ADD CONSTRAINT readings_done_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.readings_done
+    ADD CONSTRAINT readings_done_reader_book_chapter_unique UNIQUE (reader, book, chapter);
+
+ALTER TABLE ONLY public.readings_done
     ADD CONSTRAINT readings_done_reader_fkey FOREIGN KEY (reader) REFERENCES auth.users(id);
 
 ```
