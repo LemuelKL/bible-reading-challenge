@@ -96,6 +96,7 @@ export const useBibleStore = defineStore('bible', () => {
         .from('readings_done')
         .select('*')
         .match({ reader: supabase.auth.user()?.id })
+        .limit(1189)
         .then(({ data, error }) => {
           if (error) {
             console.error(error);
