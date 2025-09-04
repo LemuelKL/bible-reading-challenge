@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
 const bible = useBibleStore();
 const { readRecords, bookInfos } = storeToRefs(bible);
 
 const todayTarget = bible.getTodaysChapter();
+
+const router = useRouter();
 </script>
 
 <template>
@@ -24,7 +27,7 @@ const todayTarget = bible.getTodaysChapter();
                   todayTarget.chapter === chapter
               }"
               @click="
-                $router.push({
+                router.push({
                   name: 'reading',
                   params: {
                     book: bookInfo.name,
