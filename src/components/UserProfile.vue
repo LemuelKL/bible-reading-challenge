@@ -10,14 +10,16 @@ const { sbProfile } = storeToRefs(user);
 const updatingProfile = ref(false);
 const updateProfile = async () => {
   updatingProfile.value = true;
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData?.user?.id;
   const { data, error } = await supabase
     .from('profiles')
     .upsert({
-      id: supabase.auth.user()?.id,
+      id: userId,
       first_name: firstName.value,
       last_name: lastName.value
     })
-    .match({ id: supabase.auth.user()?.id });
+    .match({ id: userId });
   if (error) {
     // console.log("hi");
   } else if (data) {

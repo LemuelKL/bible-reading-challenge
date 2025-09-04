@@ -12,10 +12,13 @@ export default defineConfig({
       template: { transformAssetUrls }
     }),
     quasar({
-      sassVariables: 'src/quasar-variables.sass'
+      sassVariables: '@/quasar-variables.sass'
     }),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024 // 4MB
+      },
       devOptions: { enabled: true },
       manifest: {
         name: 'Enoch Bible Reading Challenge',

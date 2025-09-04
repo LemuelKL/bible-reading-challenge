@@ -5,7 +5,7 @@ import { RouterView } from 'vue-router';
 import { supabase } from './supabase';
 import { useUserStore } from './stores/user';
 import SBAuth from './components/SBAuth.vue';
-import type { AuthChangeEvent, Session } from '@supabase/gotrue-js';
+import type { AuthChangeEvent, Session } from '@supabase/auth-js';
 import ReadingControl from './components/ReadingControl.vue';
 import { useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
@@ -52,7 +52,11 @@ const menuList = [
 const drawer = ref(false);
 
 const user = useUserStore();
-user.sbUser = supabase.auth.user();
+supabase.auth.getUser().then(({ data, error }) => {
+  if (!error) {
+    user.sbUser = data?.user;
+  }
+});
 supabase.auth.onAuthStateChange(
   (event: AuthChangeEvent, session: Session | null) => {
     user.sbUser = session?.user;
@@ -67,7 +71,7 @@ supabase.auth.onAuthStateChange(
             if (res.error) {
               console.log(res.error);
             } else {
-              user.sbProfile = res.data[0];
+              user.sbProfile = res.data[0] ?? null;
             }
           },
           (err) => {
