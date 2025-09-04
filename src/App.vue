@@ -121,7 +121,7 @@ $q.dark.set(LocalStorage.getItem('darkMode') || false);
                 clickable
                 @click="router.push(menuItem.path)"
                 :active="menuItem.label === 'Outbox'"
-                v-ripple>
+                v-ripple="true">
                 <q-item-section avatar>
                   <q-icon
                     :name="menuItem.icon"
