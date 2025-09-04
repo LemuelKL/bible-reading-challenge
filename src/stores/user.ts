@@ -9,4 +9,6 @@ export const useUserStore = defineStore('user', () => {
     last_name: string;
   }>(null);
   return { sbUser, sbProfile };
+}, {
+  persist: true
 });

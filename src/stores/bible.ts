@@ -2,6 +2,7 @@ import { LocalStorage } from 'quasar';
 import { computed, ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/supabase';
+import { useUserStore } from '@/stores/user';
 
 import bible_dict from '@/stores/bible_dict.json';
 
@@ -90,43 +91,47 @@ export const useBibleStore = defineStore('bible', () => {
     }
   }
 
-  supabase.auth.onAuthStateChange(async (event) => {
+  const user = useUserStore();
+
+  supabase.auth.onAuthStateChange((event) => {
     if (event === 'SIGNED_IN') {
-      supabase
-        .from('readings_done')
-        .select('*')
-        .match({ reader: (await supabase.auth.getUser()).data?.user?.id })
-        .limit(1189)
-        .then(({ data, error }) => {
-          if (error) {
-            console.error(error);
-          } else if (data) {
-            for (const record of data) {
-              const bookInfo = bookInfos.value[record.book - 1];
-              if (bookInfo) {
-                readRecords.value[`${bookInfo.name}-${record.chapter}`] = true;
+      supabase.auth.getUser().then(({ data }) => {
+        const userId = data?.user?.id;
+        supabase
+          .from('readings_done')
+          .select('*')
+          .match({ reader: userId })
+          .limit(1189)
+          .then(({ data, error }) => {
+            if (error) {
+              console.error(error);
+            } else if (data) {
+              for (const record of data) {
+                const bookInfo = bookInfos.value[record.book - 1];
+                if (bookInfo) {
+                  readRecords.value[`${bookInfo.name}-${record.chapter}`] = true;
+                }
               }
             }
-          }
-        });
+          });
+      });
     }
   });
 
-  async function matchReadRecord() {
+  function matchReadRecord() {
     return {
-      reader: (await supabase.auth.getUser()).data?.user?.id,
+      reader: user.sbProfile?.id || '',
       book: bookIdx.value + 1,
       chapter: chapter.value
-    };
+    }
   }
 
   function markRead() {
     supabase
       .from('readings_done')
       .upsert(matchReadRecord())
-      .then(({ data, error }: { data: any[] | null; error: any }) => {
-        if (error) return;
-        if (data && data.length > 0) {
+      .then(resp => {
+        if (resp.status === 201) {
           readRecords.value[chapterKey.value] = true;
         }
       });
@@ -136,9 +141,8 @@ export const useBibleStore = defineStore('bible', () => {
       .from('readings_done')
       .delete()
       .match(matchReadRecord())
-      .then(({ data, error }: { data: any[] | null; error: any }) => {
-        if (error) return;
-        if (data && data.length > 0) {
+      .then(resp => {
+        if (resp.status === 204) {
           readRecords.value[chapterKey.value] = false;
         }
       });
@@ -279,4 +283,6 @@ export const useBibleStore = defineStore('bible', () => {
     verses,
     getTodaysChapter
   };
+}, {
+  persist: true
 });

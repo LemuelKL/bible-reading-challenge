@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import { Quasar, Dialog, Notify, Ripple } from 'quasar';
 
 // Import icon libraries
@@ -21,7 +22,10 @@ app.use(Quasar, {
   },
   directives: { Ripple }
 });
-app.use(createPinia());
+
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+app.use(pinia);
 app.use(router);
 
 app.mount('#app');
