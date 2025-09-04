@@ -9,8 +9,12 @@ import type { AuthChangeEvent, Session } from '@supabase/gotrue-js';
 import ReadingControl from './components/ReadingControl.vue';
 import { useBibleStore } from '@/stores/bible';
 import { storeToRefs } from 'pinia';
+import { useRouter, useRoute } from 'vue-router';
 const bible = useBibleStore();
 const { targetReadings, readCount } = storeToRefs(bible);
+
+const router = useRouter();
+const route = useRoute();
 
 const menuList = [
   {
@@ -98,8 +102,8 @@ $q.dark.set(LocalStorage.getItem('darkMode') || false);
               1189 Challenge
             </q-toolbar-title>
             <q-space />
-            <ReadingControl v-if="$route.name === 'reading'" />
-            <q-toolbar-title v-if="$route.name === 'my-progress'" align="right">
+            <ReadingControl v-if="route.name === 'reading'" />
+            <q-toolbar-title v-if="route.name === 'my-progress'" align="right">
               {{ readCount }} / {{ targetReadings }}
             </q-toolbar-title>
           </q-toolbar>
@@ -115,13 +119,13 @@ $q.dark.set(LocalStorage.getItem('darkMode') || false);
             <template v-for="(menuItem, index) in menuList" :key="index">
               <q-item
                 clickable
-                @click="$router.push(menuItem.path)"
+                @click="router.push(menuItem.path)"
                 :active="menuItem.label === 'Outbox'"
-                v-ripple>
+                v-ripple="true">
                 <q-item-section avatar>
                   <q-icon
                     :name="menuItem.icon"
-                    :color="menuItem.path === $route.path ? 'primary' : ''" />
+                    :color="menuItem.path === route.path ? 'primary' : ''" />
                 </q-item-section>
                 <q-item-section>
                   {{ menuItem.label }}
